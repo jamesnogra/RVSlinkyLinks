@@ -1,0 +1,57 @@
+extends layout
+
+block content
+    link(rel='stylesheet', href='/datepicker/css/bootstrap-datepicker.min.css')
+    script(src='/datepicker/js/bootstrap-datepicker.min.js')
+    script.
+        var allDomains = !{JSON.stringify(domains)};
+        var allCampaigns = !{JSON.stringify(campaigns)};
+    script(src='/javascripts/slinky-links.js')
+
+    div.container
+        div.form-group
+            label(for='domain') Domain
+            input(class='form-control' id='domain')
+            input(type='hidden' id='domain-id')
+        div.form-group
+            label(for='campaign') Campaign
+            input(class='form-control' id='campaign')
+            input(type='hidden' id='campaign-id')
+        div.form-group
+            label(for='link-type') Link Type
+            select(class='form-control' id='link-type')
+                option(value=1) Banner
+                option(value=2) Home Page/Sidebar
+                option(value=3) Guest Blog Post
+                option(value=4) In Content
+                option(value=5) Footer
+                option(value=6) Infographic
+                option(value=7) Scholarship
+                option(value=8) Guest Post - in content
+                option(value=9) Guest Post - author attribution
+                option(value=10) Bonus (viral or syndication)
+                option(value=11) Bonus (indirect but attributable)
+                option(value=12 selected) Resource page
+                option(value=13) Broken Link
+                option(value=14) Video Link
+                option(value=15) Municipality
+                option(value=16) Unlinked Brand Mention
+        div.form-group
+            label(for='destination-url') Destination URL
+            input(class='form-control' id='destination-url' placeholder='http://www.example.com')
+        div.form-group
+            label(for='link-url') Link URL
+            input(class='form-control' id='link-url' placeholder='http://www.example.com')
+        div.form-group
+            label(for='anchor-text') Anchor Text
+            input(class='form-control' id='anchor-text')
+        div.form-group
+            label(for='link-live-date') Link Live Date
+            div(class='input-group date' data-provide='datepicker' data-date-format='yyyy-mm-dd')
+                input(class='form-control' id='link-live-date' readonly='readonly')
+                div(class='input-group-addon')
+                    span(class='glyphicon glyphicon-calendar')
+        div(class='form-group text-center')
+            button(class='btn btn-primary' id='submit-btn') Submit
+            span &nbsp;
+            button(class='btn btn-default' id='reset-btn') Reset
