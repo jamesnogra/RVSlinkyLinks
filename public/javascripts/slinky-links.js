@@ -9,12 +9,12 @@ $(document).ready(function() {
         var linkURL = $('#link-url').val();
         var anchorText = $('#anchor-text').val();
         var linkLiveDate = $('#link-live-date').val();
-        /*if (!requiredField('domain', 'Domain', domain)) { return; }
+        if (!requiredField('domain', 'Domain', domain)) { return; }
         if (!requiredField('campaign', 'Campaign', campaignId)) { return; }
         if (!isValidURL('destination-url', 'Destination', destinationURL)) { return; }
         if (!isValidURL('link-url', 'Link', linkURL)) { return; }
         if (!requiredField('anchor-text', 'Anchor Text', anchorText)) { return; }
-        if (!requiredField('link-live-date', 'Link Live Date', linkLiveDate)) { return; }*/
+        if (!requiredField('link-live-date', 'Link Live Date', linkLiveDate)) { return; }
         var theData = {
             domain:         domain,
             campaignId:     campaignId,
