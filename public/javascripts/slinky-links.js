@@ -3,21 +3,22 @@ $(document).ready(function() {
     $('#submit-btn').click(function() {
         var domain = $('#domain').val();
         domain = cleanDomain(domain);
-        var campaignId = $('#campaign-id').val();
+        var campaign = $('#campaign').val();
         var destinationURL = $('#destination-url').val();
         var linkType = $('#link-type').val();
         var linkURL = $('#link-url').val();
         var anchorText = $('#anchor-text').val();
         var linkLiveDate = $('#link-live-date').val();
         if (!requiredField('domain', 'Domain', domain)) { return; }
-        if (!requiredField('campaign', 'Campaign', campaignId)) { return; }
+        //if (!requiredField('campaign', 'Campaign', campaignId)) { return; }
+        if (!requiredField('campaign', 'Campaign', campaign)) { return; }
         if (!isValidURL('destination-url', 'Destination', destinationURL)) { return; }
         if (!isValidURL('link-url', 'Link', linkURL)) { return; }
         if (!requiredField('anchor-text', 'Anchor Text', anchorText)) { return; }
         if (!requiredField('link-live-date', 'Link Live Date', linkLiveDate)) { return; }
         var theData = {
             domain:         domain,
-            campaignId:     campaignId,
+            campaign:       campaign,
             destinationURL: destinationURL,
             linkURL:        linkURL,
             anchorText:     anchorText,
@@ -25,9 +26,23 @@ $(document).ready(function() {
             linkType:       linkType, 
         };
         $('body').append('<div id="loading-container"><div class="loader"></div></div>');
-        $.post("/slinky-links", theData).done(function(data) {
-            $('#loading-container').remove();
-            console.log(data);
+
+        //check if this is a new link or edit link
+        var postURL = "/slinky-links/links";
+        if ( $('#LinkID').length ) {
+            postURL = "/slinky-links/links/edit";
+            theData.linkID = $('#LinkID').val();
+            theData.domainID = $('#DomainID').val();
+        }
+
+        $.post(postURL, theData).done(function(data) {
+            if ( $('#LinkID').length ) {
+                window.location = "/slinky-links/links";
+            } else {
+                $('#loading-container').remove();
+                updateLinksTable(theData, data.lastInsertLink.LinkID);
+                console.log(data);
+            }
         }).fail(function(xhr, status, error) {
             alert("Something went wrong.");
             $('#loading-container').remove();
@@ -50,6 +65,14 @@ $(document).ready(function() {
         format: 'yyyy-mm-dd',
         startDate: '0d',
         autoclose: true
+    });
+
+    //put all the campaigns of this user to the campaigns drop down
+    $.each(allCampaigns, function (i, item) {
+        $('#campaign').append($('<option>', { 
+            value: item.CampaignID,
+            text : item.CampaignName 
+        }));
     });
 
     /*//this is for the autocomplete of domains
@@ -79,7 +102,7 @@ $(document).ready(function() {
     });*/
 
     //this is for the autocomplete of campaigns
-    var allCampaignValues = allCampaigns.map(function(el) {
+    /*var allCampaignValues = allCampaigns.map(function(el) {
         var o = Object.assign({}, el);
         o.value = o.CampaignName;
         return o;
@@ -102,42 +125,28 @@ $(document).ready(function() {
     });
     $("#campaign").keyup(function() {
         $("#campaign-id").val("");
-    });
+    });*/
 
 });
 
-function cleanDomain(str) {
-    var newStr = str.replace("https://", "");
-    newStr = newStr.replace("http://", "");
-    newStr = newStr.replace("www.", "");
-    return newStr;
-}
-
-function requiredField(id, label, val) {
-    if (val.length==0) {
-        alert(label + ' is a required field.');
-        addHighLightToInput(id);
-        return false;
+function deleteLink(tempLinkID) {
+    if (confirm('Are you sure you want to delete this Link?')) {
+        $('#link-'+tempLinkID).remove();
+        $.get("/slinky-links/links/delete?LinkID="+tempLinkID).done(function(data) {
+        }).fail(function(xhr, status, error) {
+            alert("Something went wrong.");
+        });
     }
-    return true;
 }
 
-function isValidURL(id, label, value) {
-    //regex to match URL
-    var expressionURL = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
-    var regexURL = new RegExp(expressionURL);
-    if (!value.match(regexURL)) {
-        alert(label + " URL is not a valid URL.");
-        addHighLightToInput(id);
-        return false;
-    }
-    return true;
-}
-
-function addHighLightToInput(id) {
-    $('#'+id).focus();
-    $('#'+id).addClass('error-highlight');
-    setTimeout(function () {
-        $('.error-highlight').removeClass('error-highlight');
-    }, 2500);
+function updateLinksTable(data, LinkID) {
+    var tempTR = '';
+    $('.links-data').last().remove();
+    tempTR += '<tr class="links-data" id="link-'+LinkID+'">';
+    tempTR += '<td>'+data.destinationURL+'</td>';
+    tempTR += '<td>'+data.linkURL+'</td>';
+    tempTR += '<td>'+data.anchorText+'</td>';
+    tempTR += '<td class="text-center"><a class="btn btn-warning btn-xs" href="/slinky-links/links/edit?LinkID='+LinkID+'">Edit</a><button onClick="deleteLink('+LinkID+')" class="btn btn-danger btn-xs">Delete</button></td>';
+    tempTR += '</tr>';
+    $('#links-table').prepend(tempTR);
 }

@@ -1,0 +1,44 @@
+extends layout
+
+block content
+
+    link(rel='stylesheet', href='/datepicker/css/bootstrap-datepicker.min.css')
+    script(src='/datepicker/js/bootstrap-datepicker.min.js')
+    script(src='/javascripts/common.js')
+    script(src='/javascripts/slinky-campaigns.js')
+    script.
+        var UserInitials = "!{UserInitials}";
+
+    div.container
+        h3(class='text-center') Add Campaign
+        div.form-group
+            label(for='domain') Website
+            select(class='form-control' id='website')
+                option(value="YAH") www.yahoo.com
+                option(value="GOO") www.google.com
+                option(value="9GA") www.9gag.com
+                option(value="MSN") www.msn.com
+        div.form-group
+            label(for='campaign') Name (only text portion)
+            input(class='form-control' id='name')
+        div(class='form-group text-center')
+            button(class='btn btn-primary' id='submit-btn') Submit
+            span &nbsp;
+            button(class='btn btn-default' id='reset-btn') Reset
+        br
+        table(class='table table-bordered')
+            thead
+                tr
+                    th Name
+                    th 
+            tbody(id='campaigns-table')
+                each campaign in campaigns
+                    tr(class='campaigns-data' id='campaign-'+campaign.CampaignID)
+                        td= campaign.CampaignName
+                        td(class='text-center')
+                            a(href='/slinky-links/campaigns/edit?CampaignID='+campaign.CampaignID class='btn btn-warning btn-xs') Edit
+                            button(onClick='deleteCampaign('+campaign.CampaignID+')' class='btn btn-danger btn-xs') Delete
+        div(id='save-campaign-dialog' title='Save Campaign?' class='text-center')
+            h4(id='save-campaign-content') Loading...
+            button(class='btn btn-primary' id='save-campaign-button') Yes
+            button(class='btn btn-default' id='dont-save-campaign-button') No

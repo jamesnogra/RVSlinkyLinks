@@ -5,16 +5,25 @@ block content
     link(rel='stylesheet', href='/datepicker/css/bootstrap-datepicker.min.css')
     script(src='/datepicker/js/bootstrap-datepicker.min.js')
     script.
-        var allDomains = !{JSON.stringify(domains)};
         var allCampaigns = !{JSON.stringify(campaigns)};
+        var selectedCampaign = !{result.CampaignID};
+        var selectedLinkType = !{result.LinkTypeID};
     script(src='/javascripts/common.js')
     script(src='/javascripts/slinky-links.js')
 
+    script.
+        $(document).ready(function() {
+            $('#campaign').val(selectedCampaign);
+            $('#link-type').val(selectedLinkType);
+        });
+
     div.container
-        h3(class='text-center') Add Link
+        h3(class='text-center') Edit Link
         div.form-group
             label(for='domain') Domain
-            input(class='form-control' id='domain')
+            input(class='form-control' id='domain' value=result.HostName)
+            input(class='form-control' id='LinkID' value=result.LinkID type='hidden')
+            input(class='form-control' id='DomainID' value=result.DomainID type='hidden')
         div.form-group
             label(for='campaign') Campaign
             select(class='form-control' id='campaign')
@@ -40,37 +49,20 @@ block content
                 option(value=16) Unlinked Brand Mention
         div.form-group
             label(for='destination-url') Destination URL
-            input(class='form-control' id='destination-url' placeholder='http://www.example.com')
+            input(class='form-control' id='destination-url' placeholder='http://www.example.com' value=result.DestinationURL)
         div.form-group
             label(for='link-url') Link URL
-            input(class='form-control' id='link-url' placeholder='http://www.example.com')
+            input(class='form-control' id='link-url' placeholder='http://www.example.com' value=result.LinkURL)
         div.form-group
             label(for='anchor-text') Anchor Text
-            input(class='form-control' id='anchor-text')
+            input(class='form-control' id='anchor-text' value=result.AnchorText)
         div.form-group
             label(for='link-live-date') Link Live Date
             div(class='input-group date' data-provide='datepicker' data-date-format='yyyy-mm-dd')
-                input(class='form-control' id='link-live-date' readonly='readonly')
+                input(class='form-control' id='link-live-date' readonly='readonly' value=result.LinkLiveDate)
                 div(class='input-group-addon')
                     span(class='glyphicon glyphicon-calendar')
         div(class='form-group text-center')
             button(class='btn btn-primary' id='submit-btn') Submit
             span &nbsp;
             button(class='btn btn-default' id='reset-btn') Reset
-        br
-        table(class='table table-bordered')
-            thead
-                tr
-                    th Destination URL
-                    th Link URL
-                    th Anchor Text
-                    th 
-            tbody(id='links-table')
-                each link in links
-                    tr(class='links-data' id='link-'+link.LinkID)
-                        td= link.DestinationURL
-                        td= link.LinkURL
-                        td= link.AnchorText
-                        td(class='text-center')
-                            a(href='/slinky-links/links/edit?LinkID='+link.LinkID class='btn btn-warning btn-xs') Edit
-                            button(onClick='deleteLink('+link.LinkID+')' class='btn btn-danger btn-xs') Delete
