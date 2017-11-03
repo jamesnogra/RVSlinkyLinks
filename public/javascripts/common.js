@@ -33,3 +33,17 @@ function addHighLightToInput(id) {
         $('.error-highlight').removeClass('error-highlight');
     }, 2500);
 }
+
+function filterLinks() {
+    var filter_link = '/slinky-links/links/all';
+    filter_link += '?destination_url='+$('#destination_url').val();
+    filter_link += '&link_url='+$('#link_url').val();
+    filter_link += '&anchor_text='+$('#anchor_text').val();
+    filter_link += '&link_live_date_start='+$('#link_live_date_start').val();
+    filter_link += '&link_live_date_end='+$('#link_live_date_end').val();
+    filter_link += '&domain_authority='+$('#domain_authority').val();
+    filter_link += '&spam_score='+$('#spam_score').val();
+    filter_link += '&page_rank='+$('#page_rank').val();
+    filter_link += '&title='+$('#title').val();
+    window.location = filter_link;
+}

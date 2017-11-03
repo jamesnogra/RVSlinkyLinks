@@ -64,7 +64,7 @@ $(document).ready(function() {
 
     $('.date').datepicker({
         format: 'yyyy-mm-dd',
-        startDate: '0d',
+        //startDate: '0d',
         autoclose: true
     });
 

@@ -19,6 +19,9 @@ var cols = 1+16384+67108864+68719476736;
 var signature = encodeURIComponent(crypto.createHmac('sha1', secretKey).update(accessId + "\n" + expires).digest('base64'));
 var url =  "http://lsapi.seomoz.com/linkscape/url-metrics/?Cols=" +  cols + "&AccessID=" + accessId + "&Expires=" + expires + "&Signature=" + signature;
 
+//for date formatting in the all links page
+var moment = require('moment');
+
 var mysql = require('mysql');
 var connection = mysql.createConnection({
   host     : 'rvseo-dev.clo27q8t7swh.us-east-1.rds.amazonaws.com',
@@ -70,8 +73,8 @@ router.post('/slinky-links/links', function(req, res, next) {
                     if (lastLink.length == 1) {
                         request({ url:url, method:'POST', json:true, body:[req.body.linkURL] }, function(err, response){
                             if(err){ console.log(err); return; }
-                            console.log(response.body);
-                            connection.query('INSERT INTO '+slinky_links_table+' (LinkID, UserID, DomainID, CampaignID, LinkTypeID, DestinationURL, AnchorText, LinkURL, TheDateTime, LinkLiveDate, Active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)', [(lastLink[0].LinkID+1), UserId, (lastDomain[0].DomainID+1), req.body.campaign, req.body.linkType, req.body.destinationURL, req.body.anchorText, req.body.linkURL, new Date(), req.body.linkLiveDate], function (err, result) {
+                            //console.log(response.body[0]);
+                            connection.query('INSERT INTO '+slinky_links_table+' (LinkID, UserID, DomainID, CampaignID, LinkTypeID, DestinationURL, AnchorText, LinkURL, TheDateTime, LinkLiveDate, DomainAuthority, SpamScore, PageRank, PageTitle, Active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)', [(lastLink[0].LinkID+1), UserId, (lastDomain[0].DomainID+1), req.body.campaign, req.body.linkType, req.body.destinationURL, req.body.anchorText, req.body.linkURL, new Date(), req.body.linkLiveDate, response.body[0].pda, response.body[0].fspsc, response.body[0].umrp, response.body[0].ut], function (err, result) {
                                 if (err) { throw err; }
                                 connection.query('SELECT * FROM '+slinky_links_table+' WHERE UserID=? ORDER BY LinkID DESC LIMIT 0,1', [UserId], function (err, lastInsertLink, fields) {
                                     if (err) { throw err; }
@@ -105,18 +108,36 @@ router.get('/slinky-links/links/delete', function(req, res, next) {
 
 /* ALL LINKS */
 router.get('/slinky-links/links/all', function(req, res, next) {
-    connection.query('SELECT * FROM '+slinky_links_table+' WHERE Active=1 AND UserID=? ORDER BY LinkID DESC ' + add_limit, [UserId], function (err, links, fields) {
+    var destination_url = (typeof req.query.destination_url!=='undefined') ? (req.query.destination_url.length>0?req.query.destination_url:'') : '';
+    var link_url = (typeof req.query.link_url!=='undefined') ? (req.query.link_url.length>0?req.query.link_url:'') : '';
+    var anchor_text = (typeof req.query.anchor_text!=='undefined') ? (req.query.anchor_text.length>0?req.query.anchor_text:'') : '';
+    var link_live_date_start = (typeof req.query.link_live_date_start!=='undefined') ? (req.query.link_live_date_start.length>0?req.query.link_live_date_start:'') : '';
+    var link_live_date_end = (typeof req.query.link_live_date_end!=='undefined') ? (req.query.link_live_date_end.length>0?req.query.link_live_date_end:'') : '';
+    var between_date = '';
+    if (link_live_date_start.length>0 && link_live_date_end.length>0) {
+        between_date = 'AND (LinkLiveDate BETWEEN "'+link_live_date_start+'" AND "'+link_live_date_end+'")';
+    }
+    var domain_authority = (typeof req.query.domain_authority!=='undefined') ? (req.query.domain_authority.length>0?req.query.domain_authority:'') : '';
+    var between_domain_authority = '';
+    if (domain_authority.length>0) {
+        between_domain_authority = 'AND (DomainAuthority>'+(+domain_authority-5)+' AND DomainAuthority<'+(+domain_authority+5)+')';
+    }
+    console.log(between_domain_authority);
+    var spam_score = (typeof req.query.spam_score!=='undefined') ? (req.query.spam_score.length>0?req.query.spam_score:'') : '';
+    var page_rank = (typeof req.query.page_rank!=='undefined') ? (req.query.page_rank.length>0?req.query.page_rank:'') : '';
+    var between_page_rank = '';
+    if (page_rank.length>0) {
+        between_page_rank = 'AND (PageRank>'+(+page_rank-0.5)+' AND PageRank<'+(+page_rank+0.5)+')';
+    }
+    var title = (typeof req.query.title!=='undefined') ? (req.query.title.length>0?req.query.title:'') : '';
+    connection.query('SELECT * FROM '+slinky_links_table+' WHERE Active=1 AND UserID=? AND DestinationURL LIKE ? AND LinkURL LIKE ? AND AnchorText LIKE ? '+between_date+' '+between_domain_authority+' AND SpamScore LIKE ? '+between_page_rank+' AND PageTitle LIKE ? ORDER BY LinkID DESC ' + add_limit, [UserId, '%'+destination_url+'%', '%'+link_url+'%', '%'+anchor_text+'%', '%'+spam_score+'%', '%'+title+'%'], function (err, links, fields) {
         if (err) { throw err; }
-        res.render('slinky-links-all', { title:'Slinky Links All', links:links });
+        res.render('slinky-links-all', { title:'Slinky Links All', links:links, moment:moment });
     });
 });
 
 /* ALL LINKS */
 router.get('/slinky-links/links/moz', function(req, res, next) {
-    /*moz.urlMetrics('http://www.viralnova.com/', ['url', 'spam_score', 'domain_authority', 'title', 'page_authority'], function(err, data) {
-        if (err) { console.log(err); return; }
-        res.send(data);
-    });*/
     request({ url:url, method:'POST', json:true, body:['www.viralnova.com'] }, function(err, response){
         if(err){ console.log(err); return; }
         res.send(response.body);
