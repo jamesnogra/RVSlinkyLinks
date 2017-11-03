@@ -10,6 +10,7 @@ $(document).ready(function() {
         var anchorText = $('#anchor-text').val();
         var linkLiveDate = $('#link-live-date').val();
         if (!requiredField('domain', 'Domain', domain)) { return; }
+        //if (!requiredField('campaign', 'Campaign', campaignId)) { return; }
         if (!requiredField('campaign', 'Campaign', campaign)) { return; }
         if (!isValidURL('destination-url', 'Destination', destinationURL)) { return; }
         if (!isValidURL('link-url', 'Link', linkURL)) { return; }
