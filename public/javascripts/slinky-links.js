@@ -35,13 +35,14 @@ $(document).ready(function() {
         }
 
         $.post(postURL, theData).done(function(data) {
-            if ( $('#LinkID').length ) {
+            /*if ( $('#LinkID').length ) {
                 window.location = "/slinky-links/links";
             } else {
                 $('#loading-container').remove();
                 updateLinksTable(theData, data.lastInsertLink.LinkID);
                 console.log(data);
-            }
+            }*/
+            window.location = "/slinky-links/links/all";
         }).fail(function(xhr, status, error) {
             alert("Something went wrong.");
             $('#loading-container').remove();
@@ -67,12 +68,14 @@ $(document).ready(function() {
     });
 
     //put all the campaigns of this user to the campaigns drop down
-    $.each(allCampaigns, function (i, item) {
-        $('#campaign').append($('<option>', { 
-            value: item.CampaignID,
-            text : item.CampaignName 
-        }));
-    });
+    if (typeof allCampaigns !== 'undefined') {
+        $.each(allCampaigns, function (i, item) {
+            $('#campaign').append($('<option>', { 
+                value: item.CampaignID,
+                text : item.CampaignName 
+            }));
+        });
+    }
 
     /*//this is for the autocomplete of domains
     var allDomainValues = allDomains.map(function(el) {

@@ -1,0 +1,27 @@
+extends layout
+
+block content
+
+    link(rel='stylesheet', href='/datepicker/css/bootstrap-datepicker.min.css')
+    script(src='/datepicker/js/bootstrap-datepicker.min.js')
+    script(src='/javascripts/common.js')
+    script(src='/javascripts/slinky-links.js')
+
+    div.container
+        h3(class='text-center') All Link
+        table(class='table table-bordered')
+            thead
+                tr
+                    th Destination URL
+                    th Link URL
+                    th Anchor Text
+                    th 
+            tbody(id='links-table')
+                each link in links
+                    tr(class='links-data' id='link-'+link.LinkID)
+                        td= link.DestinationURL
+                        td= link.LinkURL
+                        td= link.AnchorText
+                        td(class='text-center')
+                            a(href='/slinky-links/links/edit?LinkID='+link.LinkID class='btn btn-warning btn-xs') Edit
+                            button(onClick='deleteLink('+link.LinkID+')' class='btn btn-danger btn-xs') Delete

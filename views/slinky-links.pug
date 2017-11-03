@@ -57,20 +57,3 @@ block content
             button(class='btn btn-primary' id='submit-btn') Submit
             span &nbsp;
             button(class='btn btn-default' id='reset-btn') Reset
-        br
-        table(class='table table-bordered')
-            thead
-                tr
-                    th Destination URL
-                    th Link URL
-                    th Anchor Text
-                    th 
-            tbody(id='links-table')
-                each link in links
-                    tr(class='links-data' id='link-'+link.LinkID)
-                        td= link.DestinationURL
-                        td= link.LinkURL
-                        td= link.AnchorText
-                        td(class='text-center')
-                            a(href='/slinky-links/links/edit?LinkID='+link.LinkID class='btn btn-warning btn-xs') Edit
-                            button(onClick='deleteLink('+link.LinkID+')' class='btn btn-danger btn-xs') Delete
