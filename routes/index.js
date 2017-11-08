@@ -14,7 +14,7 @@ var crypto = require('crypto');
 var request = require('request');
 var expires = Math.floor((Date.now() / 1000)) + 300; //in seconds.
 var accessId = 'mozscape-15c032bb32';
-var secretKey = 'bda1bfc75b6b9b261742ef26934474ed';
+var secretKey = '1ef34e354acf35019f7dfee2759797a5';
 var cols = 1+16384+67108864+68719476736;
 var signature = encodeURIComponent(crypto.createHmac('sha1', secretKey).update(accessId + "\n" + expires).digest('base64'));
 var url =  "http://lsapi.seomoz.com/linkscape/url-metrics/?Cols=" +  cols + "&AccessID=" + accessId + "&Expires=" + expires + "&Signature=" + signature;
@@ -122,7 +122,6 @@ router.get('/slinky-links/links/all', function(req, res, next) {
     if (domain_authority.length>0) {
         between_domain_authority = 'AND (DomainAuthority>'+(+domain_authority-5)+' AND DomainAuthority<'+(+domain_authority+5)+')';
     }
-    console.log(between_domain_authority);
     var spam_score = (typeof req.query.spam_score!=='undefined') ? (req.query.spam_score.length>0?req.query.spam_score:'') : '';
     var page_rank = (typeof req.query.page_rank!=='undefined') ? (req.query.page_rank.length>0?req.query.page_rank:'') : '';
     var between_page_rank = '';
@@ -130,15 +129,26 @@ router.get('/slinky-links/links/all', function(req, res, next) {
         between_page_rank = 'AND (PageRank>'+(+page_rank-0.5)+' AND PageRank<'+(+page_rank+0.5)+')';
     }
     var title = (typeof req.query.title!=='undefined') ? (req.query.title.length>0?req.query.title:'') : '';
+    var selected_filters = {
+        destination_url:        destination_url,
+        link_url:               link_url,
+        anchor_text:            anchor_text,
+        link_live_date_start:   link_live_date_start,
+        link_live_date_end:     link_live_date_end,
+        domain_authority:       domain_authority,
+        spam_score:             spam_score,
+        page_rank:              page_rank,
+        title:                  title
+    };
     connection.query('SELECT * FROM '+slinky_links_table+' WHERE Active=1 AND UserID=? AND DestinationURL LIKE ? AND LinkURL LIKE ? AND AnchorText LIKE ? '+between_date+' '+between_domain_authority+' AND SpamScore LIKE ? '+between_page_rank+' AND PageTitle LIKE ? ORDER BY LinkID DESC ' + add_limit, [UserId, '%'+destination_url+'%', '%'+link_url+'%', '%'+anchor_text+'%', '%'+spam_score+'%', '%'+title+'%'], function (err, links, fields) {
         if (err) { throw err; }
-        res.render('slinky-links-all', { title:'Slinky Links All', links:links, moment:moment });
+        res.render('slinky-links-all', { title:'Slinky Links All', links:links, moment:moment, selected_filters:selected_filters });
     });
 });
 
 /* ALL LINKS */
 router.get('/slinky-links/links/moz', function(req, res, next) {
-    request({ url:url, method:'POST', json:true, body:['www.viralnova.com'] }, function(err, response){
+    request({ url:url, method:'POST', json:true, body:['http://www.pokemongomap.info/'] }, function(err, response){
         if(err){ console.log(err); return; }
         res.send(response.body);
     });

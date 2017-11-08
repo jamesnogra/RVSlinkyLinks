@@ -23,33 +23,34 @@ block content
         tbody(id='links-table')
             tr
                 td
-                    input(type='text' class='form-control' id='destination_url' placeholder='Destination URL')
+                    input(type='text' class='form-control' id='destination_url' placeholder='Destination URL' value=selected_filters.destination_url)
                 td
-                    input(type='text' class='form-control' id='link_url' placeholder='Link URL')
+                    input(type='text' class='form-control' id='link_url' placeholder='Link URL' value=selected_filters.link_url)
                 td
-                    input(type='text' class='form-control' id='anchor_text' placeholder='Anchor Text')
+                    input(type='text' class='form-control' id='anchor_text' placeholder='Anchor Text' value=selected_filters.anchor_text)
                 td
                     div(class='input-group')
                         span(class='input-group-addon') From
                         div(class='input-group date' data-provide='datepicker' data-date-format='yyyy-mm-dd')
-                            input(class='form-control' id='link_live_date_start' placeholder='Start Date')
+                            input(class='form-control' id='link_live_date_start' placeholder='Start Date' value=selected_filters.link_live_date_start)
                             div(class='input-group-addon')
                                 span(class='glyphicon glyphicon-calendar')
                         span(class='input-group-addon' style='border-left: 0; border-right: 0;') to
                         div(class='input-group date' data-provide='datepicker' data-date-format='yyyy-mm-dd')
-                            input(class='form-control' id='link_live_date_end' placeholder='End Date')
+                            input(class='form-control' id='link_live_date_end' placeholder='End Date' value=selected_filters.link_live_date_end)
                             div(class='input-group-addon')
                                 span(class='glyphicon glyphicon-calendar')
                 td
-                    input(type='text' class='form-control' id='domain_authority' placeholder='Domain Authority')
+                    input(type='text' class='form-control' id='domain_authority' placeholder='Domain Authority' value=selected_filters.domain_authority)
                 td
-                    input(type='text' class='form-control' id='spam_score' placeholder='Spam Score')
+                    input(type='text' class='form-control' id='spam_score' placeholder='Spam Score' value=selected_filters.spam_score)
                 td
-                    input(type='text' class='form-control' id='page_rank' placeholder='Page Rank')
+                    input(type='text' class='form-control' id='page_rank' placeholder='Page Rank' value=selected_filters.page_rank)
                 td
-                    input(type='text' class='form-control' id='title' placeholder='Title')
+                    input(type='text' class='form-control' id='title' placeholder='Title' value=selected_filters.title)
                 td
                     button(type='button' class='btn btn-primary' onClick='filterLinks();') Filter
+                    a(href='/slinky-links/links/all' class='btn btn-primary') Reset
             each link in links
                 tr(class='links-data' id='link-'+link.LinkID)
                     td(style='vertical-align:middle;')= link.DestinationURL
