@@ -6,11 +6,119 @@ block content
     script(src='/datepicker/js/bootstrap-datepicker.min.js')
     script(src='/javascripts/common.js')
     script(src='/javascripts/slinky-links.js')
+    script.
+        var all_users = !{JSON.stringify(users)};
+        $(document).ready(function() { $('#link-type').val('!{selected_filters.link_type}'); });
 
     h3(class='text-center') All Links
-    table(class='table table-bordered')
+
+    br
+
+    div(class='container')
+        div(class='row')
+            div(class='col-sm-6')
+                div(class='form-group')
+                    label(class='col-sm-4 control-label') Domain
+                    div(class='col-sm-8')
+                        input(type='text' class='form-control' id='hostname' placeholder='Domain' value=selected_filters.hostname)
+            div(class='col-sm-6')
+                div(class='form-group')
+                    label(class='col-sm-4 control-label') User
+                    div(class='col-sm-8')
+                        input(type='text' class='form-control' id='username' placeholder='Username' value=selected_filters.username autocomplete='off')
+        div(class='row')
+            div(class='col-sm-6')
+                div(class='form-group')
+                    label(class='col-sm-4 control-label') Campaign
+                    div(class='col-sm-8')
+                        input(type='text' class='form-control' id='campaign' placeholder='Destination URL' value=selected_filters.campaign)
+            div(class='col-sm-6')
+                div(class='form-group')
+                    label(class='col-sm-4 control-label') Domain Authority
+                    div(class='col-sm-8')
+                        input(type='text' class='form-control' id='domain_authority' placeholder='Domain Authority' value=selected_filters.domain_authority)
+        div(class='row')
+            div(class='col-sm-6')
+                div(class='form-group')
+                    label(class='col-sm-4 control-label') Link Type
+                    div(class='col-sm-8')
+                        select(class='form-control' id='link-type' value=selected_filters.link_type)
+                            option(value='')
+            div(class='col-sm-6')
+                div(class='form-group')
+                    label(class='col-sm-4 control-label') Spam Score
+                    div(class='col-sm-8')
+                        input(type='text' class='form-control' id='spam_score' placeholder='Spam Score' value=selected_filters.spam_score)
+        div(class='row')
+            div(class='col-sm-6')
+                div(class='form-group')
+                    label(class='col-sm-4 control-label') Destination URL
+                    div(class='col-sm-8')
+                        input(type='text' class='form-control' id='destination_url' placeholder='Destination URL' value=selected_filters.destination_url)
+            div(class='col-sm-6')
+                div(class='form-group')
+                    label(class='col-sm-4 control-label') Page Rank
+                    div(class='col-sm-8')
+                        input(type='text' class='form-control' id='page_rank' placeholder='Page Rank' value=selected_filters.page_rank)
+        div(class='row')
+            div(class='col-sm-6')
+                div(class='form-group')
+                    label(class='col-sm-4 control-label') Link URL
+                    div(class='col-sm-8')
+                        input(type='text' class='form-control' id='link_url' placeholder='Link URL' value=selected_filters.link_url)
+            div(class='col-sm-6')
+                div(class='form-group')
+                    label(class='col-sm-4 control-label') Title
+                    div(class='col-sm-8')
+                        input(type='text' class='form-control' id='title' placeholder='Title' value=selected_filters.title)
+        div(class='row')
+            div(class='col-sm-6')
+                div(class='form-group')
+                    label(class='col-sm-4 control-label') Anchor Text
+                    div(class='col-sm-8')
+                        input(type='text' class='form-control' id='anchor_text' placeholder='Anchor Text' value=selected_filters.anchor_text)
+            div(class='col-sm-6')
+                div(class='form-group')
+                    
+        div(class='row')
+            div(class='col-sm-6')
+                div(class='form-group')
+                    label(class='col-sm-4 control-label') Link Live Date
+                    div(class='col-sm-8')
+                        div(class='input-group')
+                            span(class='input-group-addon') From
+                            div(class='input-group date' data-provide='datepicker' data-date-format='yyyy-mm-dd')
+                                input(class='form-control' id='link_live_date_start' placeholder='Start Date' value=selected_filters.link_live_date_start)
+                                div(class='input-group-addon')
+                                    span(class='glyphicon glyphicon-calendar')
+                            span(class='input-group-addon' style='border-left: 0; border-right: 0;') to
+                            div(class='input-group date' data-provide='datepicker' data-date-format='yyyy-mm-dd')
+                                input(class='form-control' id='link_live_date_end' placeholder='End Date' value=selected_filters.link_live_date_end)
+                                div(class='input-group-addon')
+                                    span(class='glyphicon glyphicon-calendar')
+            div(class='col-sm-6')
+                div(class='form-group')
+        div(class='row') &nbsp;
+        div(class='row')
+            div(class='col-sm-12 text-center')
+                div(class='form-group')
+                    button(type='button' class='btn btn-primary' onClick='filterLinks();') Filter
+                    a(href='/slinky-links/links/all' class='btn btn-primary') Reset
+
+    br
+
+    div(class='container')
+        div(class='row') Additional Rows to Show
+
+    br
+
+    table(class='table table-bordered' style='table-layout:fixed;word-wrap:break-word;')
         thead
             tr
+                th Domain
+                th User
+                th Campaign
+                th Link Type
                 th Destination URL
                 th Link URL
                 th Anchor Text
@@ -21,40 +129,14 @@ block content
                 th Title
                 th 
         tbody(id='links-table')
-            tr
-                td
-                    input(type='text' class='form-control' id='destination_url' placeholder='Destination URL' value=selected_filters.destination_url)
-                td
-                    input(type='text' class='form-control' id='link_url' placeholder='Link URL' value=selected_filters.link_url)
-                td
-                    input(type='text' class='form-control' id='anchor_text' placeholder='Anchor Text' value=selected_filters.anchor_text)
-                td
-                    div(class='input-group')
-                        span(class='input-group-addon') From
-                        div(class='input-group date' data-provide='datepicker' data-date-format='yyyy-mm-dd')
-                            input(class='form-control' id='link_live_date_start' placeholder='Start Date' value=selected_filters.link_live_date_start)
-                            div(class='input-group-addon')
-                                span(class='glyphicon glyphicon-calendar')
-                        span(class='input-group-addon' style='border-left: 0; border-right: 0;') to
-                        div(class='input-group date' data-provide='datepicker' data-date-format='yyyy-mm-dd')
-                            input(class='form-control' id='link_live_date_end' placeholder='End Date' value=selected_filters.link_live_date_end)
-                            div(class='input-group-addon')
-                                span(class='glyphicon glyphicon-calendar')
-                td
-                    input(type='text' class='form-control' id='domain_authority' placeholder='Domain Authority' value=selected_filters.domain_authority)
-                td
-                    input(type='text' class='form-control' id='spam_score' placeholder='Spam Score' value=selected_filters.spam_score)
-                td
-                    input(type='text' class='form-control' id='page_rank' placeholder='Page Rank' value=selected_filters.page_rank)
-                td
-                    input(type='text' class='form-control' id='title' placeholder='Title' value=selected_filters.title)
-                td
-                    button(type='button' class='btn btn-primary' onClick='filterLinks();') Filter
-                    a(href='/slinky-links/links/all' class='btn btn-primary') Reset
             each link in links
                 tr(class='links-data' id='link-'+link.LinkID)
-                    td(style='vertical-align:middle;')= link.DestinationURL
-                    td(style='vertical-align:middle;')= link.LinkURL
+                    td(style='vertical-align:middle;')= link.HostName
+                    td(style='vertical-align:middle;')= link.CampaignName
+                    td(style='vertical-align:middle;')= link.Username
+                    td(style='vertical-align:middle;' class='link-type-values')= link.LinkTypeID
+                    td(style='vertical-align:middle;word-wrap:break-word;')= link.DestinationURL
+                    td(style='vertical-align:middle;word-wrap:break-word;')= link.LinkURL
                     td(style='vertical-align:middle;')= link.AnchorText
                     td(class='text-center' style='vertical-align:middle;') #{moment(link.LinkLiveDate).format("YYYY-MM-DD")}
                     td(style='vertical-align:middle;')= link.DomainAuthority
@@ -62,5 +144,6 @@ block content
                     td(style='vertical-align:middle;')= link.PageRank
                     td(style='vertical-align:middle;')= link.PageTitle
                     td(class='text-center' style='vertical-align:middle;')
-                        a(href='/slinky-links/links/edit?LinkID='+link.LinkID class='btn btn-warning btn-xs') Edit
-                        button(onClick='deleteLink('+link.LinkID+')' class='btn btn-danger btn-xs') Delete
+                        if (UserId == link.UserID)
+                            a(href='/slinky-links/links/edit?LinkID='+link.LinkID class='btn btn-warning btn-xs') Edit
+                            button(onClick='deleteLink('+link.LinkID+')' class='btn btn-danger btn-xs') Delete

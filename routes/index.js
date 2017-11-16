@@ -3,10 +3,11 @@ var router = express.Router();
 var slinky_domains_table = 'Slinky_Domains_Test';
 var slinky_links_table = 'Slinky_Links_Test';
 var slinky_campaigns_table = 'Slinky_Campaigns_Test';
+var slinky_user_table = 'Slinky_User_Test';
 
 //TODO change this part
 var add_limit = ' LIMIT 0,50'; //TODO remove this
-var UserId = 37; //TODO remove this
+var UserId = 29; //TODO remove this //this is the logged in user
 var UserInitials = 'GFB'; //TODO Remove this
 
 //for the moz.com api
@@ -14,7 +15,7 @@ var crypto = require('crypto');
 var request = require('request');
 var expires = Math.floor((Date.now() / 1000)) + 300; //in seconds.
 var accessId = 'mozscape-15c032bb32';
-var secretKey = '1ef34e354acf35019f7dfee2759797a5';
+var secretKey = '404ecf4b3531043a069cbba070368e92';
 var cols = 1+16384+67108864+68719476736;
 var signature = encodeURIComponent(crypto.createHmac('sha1', secretKey).update(accessId + "\n" + expires).digest('base64'));
 var url =  "http://lsapi.seomoz.com/linkscape/url-metrics/?Cols=" +  cols + "&AccessID=" + accessId + "&Expires=" + expires + "&Signature=" + signature;
@@ -94,12 +95,15 @@ router.get('/slinky-links/links/delete', function(req, res, next) {
     //get first the corresponding domain
     connection.query('SELECT DomainID FROM '+slinky_links_table+' WHERE LinkID=? LIMIT 0,1', [req.query.LinkID], function (err, links, fields) {
         if (err) { throw err; }
-        //delete record from links table
+        /*//delete record from links table
         connection.query('DELETE FROM '+slinky_links_table+' WHERE LinkID=?', [req.query.LinkID], function (err, campaigns, fields) {
             if (err) { throw err; }
         });
         //delete record from domains table
         connection.query('DELETE FROM '+slinky_domains_table+' WHERE DomainID=?', [links[0].DomainID], function (err, campaigns, fields) {
+            if (err) { throw err; }
+        });*/
+        connection.query('UPDATE '+slinky_links_table+' SET Active=2 WHERE LinkID=?', [req.query.LinkID], function (err, campaigns, fields) {
             if (err) { throw err; }
         });
         res.send({'status':'LINK AND DOMAIN DELETED'});
@@ -108,8 +112,16 @@ router.get('/slinky-links/links/delete', function(req, res, next) {
 
 /* ALL LINKS */
 router.get('/slinky-links/links/all', function(req, res, next) {
+    var hostname = (typeof req.query.hostname!=='undefined') ? (req.query.hostname.length>0?req.query.hostname:'') : '';
     var destination_url = (typeof req.query.destination_url!=='undefined') ? (req.query.destination_url.length>0?req.query.destination_url:'') : '';
+    var username = (typeof req.query.username!=='undefined') ? (req.query.username.length>0?req.query.username:'') : '';
     var link_url = (typeof req.query.link_url!=='undefined') ? (req.query.link_url.length>0?req.query.link_url:'') : '';
+    var campaign = (typeof req.query.campaign!=='undefined') ? (req.query.campaign.length>0?req.query.campaign:'') : '';
+    var link_type = (typeof req.query.link_type!=='undefined') ? (req.query.link_type.length>0?req.query.link_type:'') : '';
+    var link_type_query = '';
+    if (link_type.length>0) {
+        link_type_query = 'LinkTypeID='+link_type+' AND';
+    }
     var anchor_text = (typeof req.query.anchor_text!=='undefined') ? (req.query.anchor_text.length>0?req.query.anchor_text:'') : '';
     var link_live_date_start = (typeof req.query.link_live_date_start!=='undefined') ? (req.query.link_live_date_start.length>0?req.query.link_live_date_start:'') : '';
     var link_live_date_end = (typeof req.query.link_live_date_end!=='undefined') ? (req.query.link_live_date_end.length>0?req.query.link_live_date_end:'') : '';
@@ -130,8 +142,12 @@ router.get('/slinky-links/links/all', function(req, res, next) {
     }
     var title = (typeof req.query.title!=='undefined') ? (req.query.title.length>0?req.query.title:'') : '';
     var selected_filters = {
+        hostname:               hostname,
         destination_url:        destination_url,
+        username:               username,
         link_url:               link_url,
+        campaign:               campaign,
+        link_type:              link_type,
         anchor_text:            anchor_text,
         link_live_date_start:   link_live_date_start,
         link_live_date_end:     link_live_date_end,
@@ -140,9 +156,26 @@ router.get('/slinky-links/links/all', function(req, res, next) {
         page_rank:              page_rank,
         title:                  title
     };
-    connection.query('SELECT * FROM '+slinky_links_table+' WHERE Active=1 AND UserID=? AND DestinationURL LIKE ? AND LinkURL LIKE ? AND AnchorText LIKE ? '+between_date+' '+between_domain_authority+' AND SpamScore LIKE ? '+between_page_rank+' AND PageTitle LIKE ? ORDER BY LinkID DESC ' + add_limit, [UserId, '%'+destination_url+'%', '%'+link_url+'%', '%'+anchor_text+'%', '%'+spam_score+'%', '%'+title+'%'], function (err, links, fields) {
+    var username = (typeof req.query.username!=='undefined') ? (req.query.username.length>0?req.query.username:'') : '';
+    var username_where = '';
+    if (username.length>0) {
+        username_where = 'WHERE Username="'+username+'"';
+    }
+    connection.query('SELECT UserID FROM '+slinky_user_table+' '+username_where, function (err, selected_user, fields) {
         if (err) { throw err; }
-        res.render('slinky-links-all', { title:'Slinky Links All', links:links, moment:moment, selected_filters:selected_filters });
+        var filter_user_by_id = '';
+        var selected_user_id = '';
+        if (selected_user.length==1) {
+            filter_user_by_id = slinky_links_table+'.UserID=' + selected_user[0].UserID + ' AND ';
+            selected_user_id = selected_user[0].UserID;
+        }
+        connection.query('SELECT * FROM '+slinky_links_table+' LEFT JOIN '+slinky_domains_table+' ON '+slinky_links_table+'.DomainID='+slinky_domains_table+'.DomainID LEFT JOIN '+slinky_campaigns_table+' ON '+slinky_links_table+'.CampaignID='+slinky_campaigns_table+'.CampaignID LEFT JOIN '+slinky_user_table+' ON '+slinky_links_table+'.UserID='+slinky_user_table+'.UserID WHERE '+slinky_links_table+'.Active=1 AND '+filter_user_by_id+' HostName LIKE ? AND DestinationURL LIKE ? AND LinkURL LIKE ? AND '+link_type_query+' AnchorText LIKE ? '+between_date+' '+between_domain_authority+' AND SpamScore LIKE ? '+between_page_rank+' AND PageTitle LIKE ? AND '+slinky_campaigns_table+'.CampaignName LIKE ? ORDER BY LinkID DESC ' + add_limit, ['%'+hostname+'%', '%'+destination_url+'%', '%'+link_url+'%', '%'+anchor_text+'%', '%'+spam_score+'%', '%'+title+'%', '%'+campaign+'%'], function (err, links, fields) {
+            if (err) { throw err; }
+            connection.query('SELECT UserID, Username FROM ' + slinky_user_table, function (err, users, fields) {
+                if (err) { throw err; }
+                res.render('slinky-links-all', { title:'Slinky Links All', links:links, users:users, moment:moment, selected_filters:selected_filters, selected_user_id:selected_user_id, UserId:UserId });
+            });
+        });
     });
 });
 

@@ -37,7 +37,11 @@ function addHighLightToInput(id) {
 function filterLinks() {
     var filter_link = '/slinky-links/links/all';
     filter_link += '?destination_url='+$('#destination_url').val();
+    filter_link += '&hostname='+$('#hostname').val();
+    filter_link += '&username='+$('#username').val();
     filter_link += '&link_url='+$('#link_url').val();
+    filter_link += '&campaign='+$('#campaign').val();
+    filter_link += '&link_type='+$('#link-type').val();
     filter_link += '&anchor_text='+$('#anchor_text').val();
     filter_link += '&link_live_date_start='+$('#link_live_date_start').val();
     filter_link += '&link_live_date_end='+$('#link_live_date_end').val();
@@ -47,3 +51,40 @@ function filterLinks() {
     filter_link += '&title='+$('#title').val();
     window.location = filter_link;
 }
+
+var link_type = {
+    '1':'Banner',
+    '2':'Home Page/Sidebar',
+    '3':'Guest Blog Post',
+    '4':'In Content',
+    '5':'Footer',
+    '6':'Infographic',
+    '7':'Scholarship',
+    '8':'Guest Post - in content',
+    '9':'Guest Post - author attribution',
+    '10':'Bonus (viral or syndication)',
+    '11':'Bonus (indirect but attributable)',
+    '12':'Resource page',
+    '13':'Broken Link',
+    '14':'Video Link',
+    '15':'Municipality',
+    '16':'Unlinked Brand Mention',
+};
+
+//put all the link types to the add link form
+$(document).ready(function() {
+    if ($('#link-type').length) {
+        for (var key in link_type) {
+            $('#link-type').append('<option value="'+key+'" '+((key==12)?'selected':'')+'>'+link_type[key]+'</option>');
+        }
+    }
+});
+
+//put all the real text values of the link type
+$(document).ready(function() {
+    if ($('.link-type-values').length) {
+        $('.link-type-values').each(function() {
+            $(this).html(link_type[$(this).html()])
+        });
+    }
+});

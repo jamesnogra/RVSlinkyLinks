@@ -129,7 +129,31 @@ $(document).ready(function() {
     $("#campaign").keyup(function() {
         $("#campaign-id").val("");
     });*/
-
+    //autocomplete for users in filter links
+    if (typeof all_users !== 'undefined') {
+        var allUserValues = all_users.map(function(el) {
+            var o = Object.assign({}, el);
+            o.value = o.Username;
+            return o;
+        })
+        $("#username").autocomplete({
+            source: all_users,
+            focus: function( event, ui ) {
+                $( "#username" ).val( ui.item.Username );
+                return false;
+            },
+            select: function(event, ui) {
+                $("#username").val(ui.item.Username);
+                //$("#campaign-id").val(ui.item.CampaignID);
+                return false;
+            },
+            source: function(request, response) {
+                var results = $.ui.autocomplete.filter(allUserValues, request.term);
+                response(results.slice(0, 10));
+            }
+        });
+    }
+    
 });
 
 function deleteLink(tempLinkID) {
