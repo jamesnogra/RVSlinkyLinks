@@ -43,3 +43,9 @@ a {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+.checkbox-group {
+    padding: 10px;
+    border: 1px solid #e6e6e6;
+    border-radius: 10px;
+    margin-left: 10px;
+}

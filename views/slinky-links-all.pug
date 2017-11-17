@@ -108,41 +108,58 @@ block content
     br
 
     div(class='container')
-        div(class='row') Additional Rows to Show
+        div(class='row text-center')
+            span Additional Columns to Show
+            label(for='checkbox-user')
+                span(class='checkbox-group')
+                    input(type='checkbox' id='checkbox-user' onChange='checkAllCheckboxes()')
+                    | &nbsp;User
+            label(for='checkbox-domain-authority')
+                span(class='checkbox-group')
+                    input(type='checkbox' id='checkbox-domain-authority' onChange='checkAllCheckboxes()')
+                    | &nbsp;Domain Authority
+            label(for='checkbox-spam-score')
+                span(class='checkbox-group')
+                    input(type='checkbox' id='checkbox-spam-score' onChange='checkAllCheckboxes()')
+                    | &nbsp;Spam Score
+            label(for='checkbox-page-rank')
+                span(class='checkbox-group')
+                    input(type='checkbox' id='checkbox-page-rank' onChange='checkAllCheckboxes()')
+                    | &nbsp;Page Rank
 
     br
 
     table(class='table table-bordered' style='table-layout:fixed;word-wrap:break-word;')
         thead
             tr
-                th Domain
-                th User
-                th Campaign
-                th Link Type
-                th Destination URL
-                th Link URL
-                th Anchor Text
-                th Link Live Date
-                th Domain Authority
-                th Spam Score
-                th Page Rank
-                th Title
+                th(class='c-domain') Domain
+                th(class='c-campaign') Campaign
+                th(class='c-user') User
+                th(class='c-link-type') Link Type
+                th(class='c-destination-url') Destination URL
+                th(class='c-link-url') Link URL
+                th(class='c-anchor-text') Anchor Text
+                th(class='c-link-live-date') Link Live Date
+                th(class='c-domain-authority') Domain Authority
+                th(class='c-spam-score') Spam Score
+                th(class='c-page-rank') Page Rank
+                th(class='c-title') Title
                 th 
         tbody(id='links-table')
             each link in links
                 tr(class='links-data' id='link-'+link.LinkID)
-                    td(style='vertical-align:middle;')= link.HostName
-                    td(style='vertical-align:middle;')= link.CampaignName
-                    td(style='vertical-align:middle;')= link.Username
-                    td(style='vertical-align:middle;' class='link-type-values')= link.LinkTypeID
-                    td(style='vertical-align:middle;word-wrap:break-word;')= link.DestinationURL
-                    td(style='vertical-align:middle;word-wrap:break-word;')= link.LinkURL
-                    td(style='vertical-align:middle;')= link.AnchorText
-                    td(class='text-center' style='vertical-align:middle;') #{moment(link.LinkLiveDate).format("YYYY-MM-DD")}
-                    td(style='vertical-align:middle;')= link.DomainAuthority
-                    td(style='vertical-align:middle;')= link.SpamScore
-                    td(style='vertical-align:middle;')= link.PageRank
-                    td(style='vertical-align:middle;')= link.PageTitle
+                    td(style='vertical-align:middle;' class='c-domain')= link.HostName
+                    td(style='vertical-align:middle;' class='c-campaign')= link.CampaignName
+                    td(style='vertical-align:middle;' class='c-user')= link.Username
+                    td(style='vertical-align:middle;' class='link-type-values c-link-type')= link.LinkTypeID
+                    td(style='vertical-align:middle;word-wrap:break-word;' class='c-destination-url')= link.DestinationURL
+                    td(style='vertical-align:middle;word-wrap:break-word;' class='c-link-url')= link.LinkURL
+                    td(style='vertical-align:middle;' class='c-anchor-text')= link.AnchorText
+                    td(style='vertical-align:middle;' class='text-center c-link-live-date') #{moment(link.LinkLiveDate).format("YYYY-MM-DD")}
+                    td(style='vertical-align:middle;' class='c-domain-authority')= link.DomainAuthority
+                    td(style='vertical-align:middle;' class='c-spam-score')= link.SpamScore
+                    td(style='vertical-align:middle;' class='c-page-rank')= link.PageRank
+                    td(style='vertical-align:middle;' class='c-title')= link.PageTitle
                     td(class='text-center' style='vertical-align:middle;')
                         if (UserId == link.UserID)
                             a(href='/slinky-links/links/edit?LinkID='+link.LinkID class='btn btn-warning btn-xs') Edit

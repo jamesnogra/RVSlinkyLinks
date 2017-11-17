@@ -8,6 +8,14 @@ block content
         var allCampaigns = !{JSON.stringify(campaigns)};
         var selectedCampaign = !{result.CampaignID};
         var selectedLinkType = !{result.LinkTypeID};
+        
+        var original_hostname = '!{result.HostName}';
+        var original_campaign = '!{result.CampaignID}';
+        var original_link_type = '!{result.LinkTypeID}';
+        var original_destination_url = '!{result.DestinationURL}';
+        var original_link_url = '!{result.LinkURL}';
+        var original_anchor_text = '!{result.AnchorText}';
+        var original_link_live_date = '!{moment(result.LinkLiveDate).format("YYYY-MM-DD")}';
     script(src='/javascripts/common.js')
     script(src='/javascripts/slinky-links.js')
 
@@ -31,22 +39,6 @@ block content
         div.form-group
             label(for='link-type') Link Type
             select(class='form-control' id='link-type')
-                option(value=1) Banner
-                option(value=2) Home Page/Sidebar
-                option(value=3) Guest Blog Post
-                option(value=4) In Content
-                option(value=5) Footer
-                option(value=6) Infographic
-                option(value=7) Scholarship
-                option(value=8) Guest Post - in content
-                option(value=9) Guest Post - author attribution
-                option(value=10) Bonus (viral or syndication)
-                option(value=11) Bonus (indirect but attributable)
-                option(value=12 selected) Resource page
-                option(value=13) Broken Link
-                option(value=14) Video Link
-                option(value=15) Municipality
-                option(value=16) Unlinked Brand Mention
         div.form-group
             label(for='destination-url') Destination URL
             input(class='form-control' id='destination-url' placeholder='http://www.example.com' value=result.DestinationURL)
@@ -59,7 +51,7 @@ block content
         div.form-group
             label(for='link-live-date') Link Live Date
             div(class='input-group date' data-provide='datepicker' data-date-format='yyyy-mm-dd')
-                input(class='form-control' id='link-live-date' readonly='readonly' value=result.LinkLiveDate)
+                input(class='form-control' id='link-live-date' readonly='readonly' value=moment(result.LinkLiveDate).format("YYYY-MM-DD"))
                 div(class='input-group-addon')
                     span(class='glyphicon glyphicon-calendar')
         div(class='form-group text-center')

@@ -49,6 +49,10 @@ function filterLinks() {
     filter_link += '&spam_score='+$('#spam_score').val();
     filter_link += '&page_rank='+$('#page_rank').val();
     filter_link += '&title='+$('#title').val();
+    filter_link += '&checkbox_user=' + (($('#checkbox-user').is(":checked")) ? 'TRUE' : 'FALSE');
+    filter_link += '&checkbox_domain_authority=' + (($('#checkbox-domain-authority').is(":checked")) ? 'TRUE' : 'FALSE');
+    filter_link += '&checkbox_spam_score=' + (($('#checkbox-spam-score').is(":checked")) ? 'TRUE' : 'FALSE');
+    filter_link += '&checkbox_page_rank=' + (($('#checkbox-page-rank').is(":checked")) ? 'TRUE' : 'FALSE');
     window.location = filter_link;
 }
 
@@ -88,3 +92,67 @@ $(document).ready(function() {
         });
     }
 });
+
+//this is to hide some of the fields in the all links
+$(document).ready(function() {
+    if ($('.c-user').length) {
+        if (getUrlParameter('checkbox_user')=='TRUE') {
+            $('#checkbox-user').prop('checked', true);
+        } else {
+            $('#checkbox-user').prop('checked', false);
+        }
+        if (getUrlParameter('checkbox_domain_authority')=='TRUE') {
+            $('#checkbox-domain-authority').prop('checked', true);
+        } else {
+            $('#checkbox-domain-authority').prop('checked', false);
+        }
+        if (getUrlParameter('checkbox_spam_score')=='TRUE') {
+            $('#checkbox-spam-score').prop('checked', true);
+        } else {
+            $('#checkbox-spam-score').prop('checked', false);
+        }
+        if (getUrlParameter('checkbox_page_rank')=='TRUE') {
+            $('#checkbox-page-rank').prop('checked', true);
+        } else {
+            $('#checkbox-page-rank').prop('checked', false);
+        }
+        checkAllCheckboxes();
+    }
+});
+function checkAllCheckboxes() {
+    if ($('#checkbox-user').is(":checked")) {
+        $('.c-user').show();
+    } else {
+        $('.c-user').hide();
+    }
+    if ($('#checkbox-domain-authority').is(":checked")) {
+        $('.c-domain-authority').show();
+    } else {
+        $('.c-domain-authority').hide();
+    }
+    if ($('#checkbox-spam-score').is(":checked")) {
+        $('.c-spam-score').show();
+    } else {
+        $('.c-spam-score').hide();
+    }
+    if ($('#checkbox-page-rank').is(":checked")) {
+        $('.c-page-rank').show();
+    } else {
+        $('.c-page-rank').hide();
+    }
+}
+//from https://stackoverflow.com/questions/19491336/get-url-parameter-jquery-or-how-to-get-query-string-values-in-js
+var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : sParameterName[1];
+        }
+    }
+};

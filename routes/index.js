@@ -57,7 +57,7 @@ router.post('/slinky-links/links', function(req, res, next) {
             if (err) { throw err; }
             if (lastDomain.length == 1) {
                 //insert record for Domains table
-                rootDomain = req.body.domain.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "").split('/')[0];
+                var rootDomain = req.body.domain.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "").split('/')[0];
                 connection.query('SELECT DomainID FROM '+slinky_domains_table+' WHERE HostName=? OR HostName="www.'+rootDomain+'" LIMIT 0,1', [rootDomain], function (err, rootDomainResult, fields) {
                     rootDomainID = null;
                     if (rootDomainResult.length==1) {
@@ -141,6 +141,10 @@ router.get('/slinky-links/links/all', function(req, res, next) {
         between_page_rank = 'AND (PageRank>'+(+page_rank-0.5)+' AND PageRank<'+(+page_rank+0.5)+')';
     }
     var title = (typeof req.query.title!=='undefined') ? (req.query.title.length>0?req.query.title:'') : '';
+    var checkbox_user = (typeof req.query.checkbox_user!=='undefined') ? (req.query.checkbox_user.length>0?req.query.checkbox_user:'') : '';
+    var checkbox_domain_authority = (typeof req.query.checkbox_domain_authority!=='undefined') ? (req.query.checkbox_domain_authority.length>0?req.query.checkbox_domain_authority:'') : '';
+    var checkbox_spam_score = (typeof req.query.checkbox_spam_score!=='undefined') ? (req.query.checkbox_spam_score.length>0?req.query.checkbox_spam_score:'') : '';
+    var checkbox_page_rank = (typeof req.query.checkbox_page_rank!=='undefined') ? (req.query.checkbox_page_rank.length>0?req.query.checkbox_page_rank:'') : '';
     var selected_filters = {
         hostname:               hostname,
         destination_url:        destination_url,
@@ -154,7 +158,11 @@ router.get('/slinky-links/links/all', function(req, res, next) {
         domain_authority:       domain_authority,
         spam_score:             spam_score,
         page_rank:              page_rank,
-        title:                  title
+        title:                  title,
+        checkbox_user:          checkbox_user,
+        checkbox_domain_authority:checkbox_domain_authority,
+        checkbox_spam_score:    checkbox_spam_score,
+        checkbox_page_rank:     checkbox_page_rank
     };
     var username = (typeof req.query.username!=='undefined') ? (req.query.username.length>0?req.query.username:'') : '';
     var username_where = '';
@@ -193,7 +201,7 @@ router.get('/slinky-links/links/edit', function(req, res, next) {
         if (err) { throw err; }
         connection.query('SELECT '+slinky_domains_table+'.DomainID, '+slinky_domains_table+'.HostName, '+slinky_links_table+'.LinkID, '+slinky_links_table+'.DestinationURL, '+slinky_links_table+'.LinkURL, '+slinky_links_table+'.CampaignID, '+slinky_links_table+'.LinkTypeID, '+slinky_links_table+'.AnchorText, '+slinky_links_table+'.LinkLiveDate FROM `'+slinky_domains_table+'` LEFT JOIN '+slinky_links_table+' ON '+slinky_links_table+'.DomainID = '+slinky_domains_table+'.DomainID WHERE '+slinky_links_table+'.LinkID=? LIMIT 0,1', [req.query.LinkID], function (err, result, fields) {
             if (err) { throw err; }
-            res.render('slinky-campaigns-edit', { title:'Slinky Links', result:result[0], campaigns:campaigns });
+            res.render('slinky-campaigns-edit', { title:'Slinky Links', result:result[0], campaigns:campaigns, moment:moment });
         });
     });
 });
@@ -201,11 +209,14 @@ router.get('/slinky-links/links/edit', function(req, res, next) {
 /* EDIT POST LINKS */
 router.post('/slinky-links/links/edit', function(req, res, next) {
     //update first the domain
-    connection.query('UPDATE '+slinky_domains_table+' SET HostName=? WHERE DomainID=?', [req.body.domain, req.body.domainID], function (err, results, fields) {
+    var rootDomain = req.body.domain.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "").split('/')[0];
+    connection.query('UPDATE '+slinky_domains_table+' SET HostName=? WHERE DomainID=?', [rootDomain, req.body.domainID], function (err, results, fields) {
         if (err) { throw err; }
     });
-    connection.query('UPDATE '+slinky_links_table+' SET CampaignID=?, LinkTypeID=?, DestinationURL=?, AnchorText=?, LinkURL=?, LinkLiveDate=? WHERE LinkID=?', [req.body.campaign, req.body.linkType, req.body.destinationURL, req.body.anchorText, req.body.linkURL, req.body.linkLiveDate, req.body.linkID], function (err, results, fields) {
-        if (err) { throw err; }
+    request({ url:url, method:'POST', json:true, body:[req.body.linkURL] }, function(err, response){
+        connection.query('UPDATE '+slinky_links_table+' SET CampaignID=?, LinkTypeID=?, DestinationURL=?, AnchorText=?, LinkURL=?, LinkLiveDate=?, DomainAuthority=?, SpamScore=?, PageRank=?, PageTitle=? WHERE LinkID=?', [req.body.campaign, req.body.linkType, req.body.destinationURL, req.body.anchorText, req.body.linkURL, req.body.linkLiveDate, response.body[0].pda, response.body[0].fspsc, response.body[0].umrp, response.body[0].ut, req.body.linkID], function (err, results, fields) {
+            if (err) { throw err; }
+        });
     });
     res.send({'status':'LINK AND DOMAIN EDITED'});
 });

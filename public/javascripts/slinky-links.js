@@ -25,16 +25,29 @@ $(document).ready(function() {
             linkLiveDate:   linkLiveDate,
             linkType:       linkType, 
         };
-        $('body').append('<div id="loading-container"><div class="loader"></div></div>');
-
         //check if this is a new link or edit link
         var postURL = "/slinky-links/links";
         if ( $('#LinkID').length ) {
             postURL = "/slinky-links/links/edit";
             theData.linkID = $('#LinkID').val();
             theData.domainID = $('#DomainID').val();
+            var changes_text = '';
+            changes_text += (original_hostname != domain) ? 'domain, ': '';
+            changes_text += (original_campaign != campaign) ? 'campaign, ' : '';
+            changes_text += (original_link_type != linkType) ? 'link type, ' : '';
+            changes_text += (original_destination_url != destinationURL) ? 'destination url, ' : '';
+            changes_text += (original_link_url != linkURL) ? 'link url, ' : '';
+            changes_text += (original_anchor_text != anchorText) ? 'anchor text, ' : '';
+            changes_text += (original_link_live_date != linkLiveDate) ? 'link live date, ' : '';
+            changes_text = changes_text.replace(/,\s*$/, "");
+            if (changes_text.length>3) {
+                if (!confirm('Are you sure you want to change ' + changes_text + '?')) {
+                    return;
+                }
+            }
         }
 
+        $('body').append('<div id="loading-container"><div class="loader"></div></div>');
         $.post(postURL, theData).done(function(data) {
             /*if ( $('#LinkID').length ) {
                 window.location = "/slinky-links/links";
@@ -153,7 +166,7 @@ $(document).ready(function() {
             }
         });
     }
-    
+
 });
 
 function deleteLink(tempLinkID) {
