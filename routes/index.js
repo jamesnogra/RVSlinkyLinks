@@ -141,6 +141,7 @@ router.get('/slinky-links/links/all', function(req, res, next) {
         between_page_rank = 'AND (PageRank>'+(+page_rank-0.5)+' AND PageRank<'+(+page_rank+0.5)+')';
     }
     var title = (typeof req.query.title!=='undefined') ? (req.query.title.length>0?req.query.title:'') : '';
+    var checkbox_campaign = (typeof req.query.checkbox_campaign!=='undefined') ? (req.query.checkbox_campaign.length>0?req.query.checkbox_campaign:'') : '';
     var checkbox_user = (typeof req.query.checkbox_user!=='undefined') ? (req.query.checkbox_user.length>0?req.query.checkbox_user:'') : '';
     var checkbox_domain_authority = (typeof req.query.checkbox_domain_authority!=='undefined') ? (req.query.checkbox_domain_authority.length>0?req.query.checkbox_domain_authority:'') : '';
     var checkbox_spam_score = (typeof req.query.checkbox_spam_score!=='undefined') ? (req.query.checkbox_spam_score.length>0?req.query.checkbox_spam_score:'') : '';
@@ -159,6 +160,7 @@ router.get('/slinky-links/links/all', function(req, res, next) {
         spam_score:             spam_score,
         page_rank:              page_rank,
         title:                  title,
+        checkbox_campaign:      checkbox_campaign,
         checkbox_user:          checkbox_user,
         checkbox_domain_authority:checkbox_domain_authority,
         checkbox_spam_score:    checkbox_spam_score,
@@ -219,6 +221,14 @@ router.post('/slinky-links/links/edit', function(req, res, next) {
         });
     });
     res.send({'status':'LINK AND DOMAIN EDITED'});
+});
+
+/* VIEW LINK */
+router.get('/slinky-links/links/view', function(req, res, next) {
+    connection.query('SELECT * FROM '+slinky_links_table+' LEFT JOIN '+slinky_domains_table+' ON '+slinky_links_table+'.DomainID='+slinky_domains_table+'.DomainID LEFT JOIN '+slinky_campaigns_table+' ON '+slinky_links_table+'.CampaignID='+slinky_campaigns_table+'.CampaignID LEFT JOIN '+slinky_user_table+' ON '+slinky_links_table+'.UserID='+slinky_user_table+'.UserID WHERE LinkID=?', [req.query.LinkID], function (err, result, fields) {
+        if (err) { throw err; }
+        res.render('slinky-links-edit', { title:'Slinky Links', result:result[0], moment:moment, UserId:UserId });
+    });
 });
 
 /* ADD CAMPAIGNS */

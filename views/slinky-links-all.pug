@@ -110,10 +110,18 @@ block content
     div(class='container')
         div(class='row text-center')
             span Additional Columns to Show
+            label(for='checkbox-campaign')
+                span(class='checkbox-group')
+                    input(type='checkbox' id='checkbox-campaign' onChange='checkAllCheckboxes()')
+                    | &nbsp;Campaign
             label(for='checkbox-user')
                 span(class='checkbox-group')
                     input(type='checkbox' id='checkbox-user' onChange='checkAllCheckboxes()')
                     | &nbsp;User
+            label(for='checkbox-anchor-text')
+                span(class='checkbox-group')
+                    input(type='checkbox' id='checkbox-anchor-text' onChange='checkAllCheckboxes()')
+                    | &nbsp;Anchor Text
             label(for='checkbox-domain-authority')
                 span(class='checkbox-group')
                     input(type='checkbox' id='checkbox-domain-authority' onChange='checkAllCheckboxes()')
@@ -126,6 +134,10 @@ block content
                 span(class='checkbox-group')
                     input(type='checkbox' id='checkbox-page-rank' onChange='checkAllCheckboxes()')
                     | &nbsp;Page Rank
+            label(for='checkbox-title')
+                span(class='checkbox-group')
+                    input(type='checkbox' id='checkbox-title' onChange='checkAllCheckboxes()')
+                    | &nbsp;Title
 
     br
 
@@ -161,6 +173,7 @@ block content
                     td(style='vertical-align:middle;' class='c-page-rank')= link.PageRank
                     td(style='vertical-align:middle;' class='c-title')= link.PageTitle
                     td(class='text-center' style='vertical-align:middle;')
+                        a(href='/slinky-links/links/view?LinkID='+link.LinkID class='btn btn-primary btn-xs') View
                         if (UserId == link.UserID)
                             a(href='/slinky-links/links/edit?LinkID='+link.LinkID class='btn btn-warning btn-xs') Edit
                             button(onClick='deleteLink('+link.LinkID+')' class='btn btn-danger btn-xs') Delete

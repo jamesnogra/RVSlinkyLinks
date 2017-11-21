@@ -1,0 +1,63 @@
+extends layout
+
+block content
+
+    script(src='/javascripts/common.js')
+
+    div.container
+        h3(class='text-center') View Link
+
+        table(class='table table-bordered')
+            tr
+                td Domain
+                td
+                    b !{result.HostName}
+            tr
+                td Campaign
+                td
+                    b !{result.CampaignName}
+            tr
+                td User
+                td
+                    b !{result.Username}
+            tr
+                td Link Type
+                td(class='link-type-values') !{result.LinkTypeID}
+            tr
+                td Destination URL
+                td
+                    b !{result.DestinationURL}
+            tr
+                td Link URL
+                td
+                    b !{result.LinkURL}
+            tr
+                td Anchor Text
+                td
+                    b !{result.AnchorText}
+            tr
+                td Link Live Date
+                td
+                    b #{moment(result.LinkLiveDate).format("YYYY-MM-DD")}
+            tr
+                td Domain Authority
+                td
+                    b !{result.DomainAuthority}
+            tr
+                td Spam Score
+                td
+                    b !{result.SpamScore}
+            tr
+                td Page Rank
+                td
+                    b !{result.PageRank}
+            tr
+                td Title
+                td
+                    b !{result.PageTitle}
+            tr
+                td(class='text-center' colspan='2')
+                    button(class='btn btn-primary btn-xs' onClick='window.history.back();') Back
+                    if (UserId == result.UserID)
+                        a(href='/slinky-links/links/edit?LinkID='+result.LinkID class='btn btn-warning btn-xs') Edit
+                        button(onClick='deleteLink('+result.LinkID+')' class='btn btn-danger btn-xs') Delete

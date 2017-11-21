@@ -49,10 +49,13 @@ function filterLinks() {
     filter_link += '&spam_score='+$('#spam_score').val();
     filter_link += '&page_rank='+$('#page_rank').val();
     filter_link += '&title='+$('#title').val();
+    filter_link += '&checkbox_campaign=' + (($('#checkbox-campaign').is(":checked")) ? 'TRUE' : 'FALSE');
     filter_link += '&checkbox_user=' + (($('#checkbox-user').is(":checked")) ? 'TRUE' : 'FALSE');
+    filter_link += '&checkbox_anchor_text=' + (($('#checkbox-anchor-text').is(":checked")) ? 'TRUE' : 'FALSE');
     filter_link += '&checkbox_domain_authority=' + (($('#checkbox-domain-authority').is(":checked")) ? 'TRUE' : 'FALSE');
     filter_link += '&checkbox_spam_score=' + (($('#checkbox-spam-score').is(":checked")) ? 'TRUE' : 'FALSE');
     filter_link += '&checkbox_page_rank=' + (($('#checkbox-page-rank').is(":checked")) ? 'TRUE' : 'FALSE');
+    filter_link += '&checkbox_title=' + (($('#checkbox-title').is(":checked")) ? 'TRUE' : 'FALSE');
     window.location = filter_link;
 }
 
@@ -96,10 +99,20 @@ $(document).ready(function() {
 //this is to hide some of the fields in the all links
 $(document).ready(function() {
     if ($('.c-user').length) {
+        if (getUrlParameter('checkbox_campaign')=='TRUE') {
+            $('#checkbox-campaign').prop('checked', true);
+        } else {
+            $('#checkbox-campaign').prop('checked', false);
+        }
         if (getUrlParameter('checkbox_user')=='TRUE') {
             $('#checkbox-user').prop('checked', true);
         } else {
             $('#checkbox-user').prop('checked', false);
+        }
+        if (getUrlParameter('checkbox_anchor_text')=='TRUE') {
+            $('#checkbox-anchor-text').prop('checked', true);
+        } else {
+            $('#checkbox-anchor-text').prop('checked', false);
         }
         if (getUrlParameter('checkbox_domain_authority')=='TRUE') {
             $('#checkbox-domain-authority').prop('checked', true);
@@ -116,14 +129,29 @@ $(document).ready(function() {
         } else {
             $('#checkbox-page-rank').prop('checked', false);
         }
+        if (getUrlParameter('checkbox_title')=='TRUE') {
+            $('#checkbox-title').prop('checked', true);
+        } else {
+            $('#checkbox-title').prop('checked', false);
+        }
         checkAllCheckboxes();
     }
 });
 function checkAllCheckboxes() {
+    if ($('#checkbox-campaign').is(":checked")) {
+        $('.c-campaign').show();
+    } else {
+        $('.c-campaign').hide();
+    }
     if ($('#checkbox-user').is(":checked")) {
         $('.c-user').show();
     } else {
         $('.c-user').hide();
+    }
+    if ($('#checkbox-anchor-text').is(":checked")) {
+        $('.c-anchor-text').show();
+    } else {
+        $('.c-anchor-text').hide();
     }
     if ($('#checkbox-domain-authority').is(":checked")) {
         $('.c-domain-authority').show();
@@ -139,6 +167,11 @@ function checkAllCheckboxes() {
         $('.c-page-rank').show();
     } else {
         $('.c-page-rank').hide();
+    }
+    if ($('#checkbox-title').is(":checked")) {
+        $('.c-title').show();
+    } else {
+        $('.c-title').hide();
     }
 }
 //from https://stackoverflow.com/questions/19491336/get-url-parameter-jquery-or-how-to-get-query-string-values-in-js
